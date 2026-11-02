@@ -1,0 +1,6 @@
+allowBuilds:
+  bcrypt: false
+  esbuild: false
+permissions:
+  dotenv:
+    skills: false
