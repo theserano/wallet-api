@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express from "express";
-import type { Request, Response, NextFunction } from "express";
 import { pool } from "./db.js";
-import { AppError } from "./errors.js";
 import authRouter from "./routes/auth.js";
+import { requireAuth } from "./middleware/requireAuth.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 
 const app = express();
@@ -21,17 +21,15 @@ app.get('/db-check', async (_req, res) => {
   }
 });
 
+// temporary endpoint to check the token works; delete later
+app.get("/me", requireAuth, (req, res) => {
+  res.json({ userId: req.userId });
+});
+
 app.use("/auth", authRouter);
 
-// Temporary error handler; moves to middleware/errorHandler.ts in step 3.
-// Must be registered after all routes.
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  if (err instanceof AppError) {
-    return res.status(err.status).json({ error: err.message });
-  }
-  console.error(err);
-  res.status(500).json({ error: "Internal server error" });
-});
+// Must be registered last, after all routes.
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
