@@ -1,5 +1,6 @@
-import express from "express";
 import "dotenv/config";
+import express from "express";
+import { pool } from "./db.js";
 
 
 const app = express();
@@ -9,10 +10,7 @@ app.use(express.json());
 
 app.get('/db-check', async (_req, res) => {
   try{
-    const { pool } = await import('./db.ts');
-    const client = await pool.connect();
-    const result = await client.query('SELECT now()');
-    client.release();
+    const result = await pool.query('SELECT now()');
     res.json({ status: "ok", dbTime: result.rows[0].now });
   } catch (error) {
     console.error("Database check failed:", error);
