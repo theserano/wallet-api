@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { pool } from "./db.js";
 import authRouter from "./routes/auth.js";
+import accountsRouter from "./routes/accounts.js";
 import { requireAuth } from "./middleware/requireAuth.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -27,6 +28,7 @@ app.get("/me", requireAuth, (req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/accounts", accountsRouter);
 
 // Must be registered last, after all routes.
 app.use(errorHandler);
